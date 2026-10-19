@@ -1,0 +1,95 @@
+//Любевич Нікіта 201 група 4 варіант завдання
+#include <stdio.h>
+#include <stdlib.h>
+
+struct list {
+    int data;
+    struct list *next;
+};
+
+struct list *create_list(int n) {
+    struct list *head = NULL, *tail = NULL, *q;
+    int i, x;
+    for (i = 0; i < n; i++) {
+        printf("Введіть елемент %d: ", i + 1);
+        scanf("%d", &x);
+        q = (struct list *)malloc(sizeof(struct list));
+        q->data = x;
+        q->next = NULL;
+        if (head == NULL) head = q;
+        else tail->next = q;
+        tail = q;
+    }
+    return head;
+}
+
+void show(struct list *x) {
+    while (x != NULL) {
+        printf("%d ", x->data);
+        x = x->next;
+    }
+    printf("\n");
+}
+
+struct list *partition(struct list *head, int a, int b) {
+    struct list *less_head = NULL, *less_tail = NULL;
+    struct list *mid_head = NULL, *mid_tail = NULL;
+    struct list *great_head = NULL, *great_tail = NULL;
+    struct list *x = head, *next;
+    struct list *new_head = NULL, *new_tail = NULL;
+
+    while (x != NULL) {
+        next = x->next;
+        x->next = NULL;
+        if (x->data < a) {
+            if (less_head == NULL) less_head = x; else less_tail->next = x;
+            less_tail = x;
+        } else if (x->data > b) {
+            if (great_head == NULL) great_head = x; else great_tail->next = x;
+            great_tail = x;
+        } else {
+            if (mid_head == NULL) mid_head = x; else mid_tail->next = x;
+            mid_tail = x;
+        }
+        x = next;
+    }
+
+    if (less_head != NULL) { new_head = less_head; new_tail = less_tail; }
+    if (mid_head != NULL) {
+        if (new_head == NULL) new_head = mid_head; else new_tail->next = mid_head;
+        new_tail = mid_tail;
+    }
+    if (great_head != NULL) {
+        if (new_head == NULL) new_head = great_head; else new_tail->next = great_head;
+        new_tail = great_tail;
+    }
+    return new_head;
+}
+
+void free_list(struct list *x) {
+    struct list *tmp;
+    while (x != NULL) {
+        tmp = x;
+        x = x->next;
+        free(tmp);
+    }
+}
+
+int main() {
+    int n, a, b;
+    struct list *L;
+    printf("Введіть n: ");
+    scanf("%d", &n);
+    L = create_list(n);
+    printf("Список L: ");
+    show(L);
+    printf("Введіть a: ");
+    scanf("%d", &a);
+    printf("Введіть b: ");
+    scanf("%d", &b);
+    L = partition(L, a, b);
+    printf("Переупорядкований список: ");
+    show(L);
+    free_list(L);
+    return 0;
+}
